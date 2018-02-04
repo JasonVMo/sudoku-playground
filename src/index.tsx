@@ -5,11 +5,10 @@ import './index.css';
 
 import { Fabric } from 'office-ui-fabric-react/lib/Fabric';
 
-import Hello from './containers/Hello';
 import { Provider } from 'react-redux';
 
-import Cell from './components/Cell';
 import Header from './containers/Header';
+import GameBoard from './containers/GameBoard';
 
 import { createStore } from 'redux';
 import { baseReducer } from './reducers/index';
@@ -21,10 +20,6 @@ const store = createStore<StoreState>(baseReducer, {
     penMode: true,
     difficulty: 'Easy',
     cellDimension: 35,
-  },
-  enthusiasm: {
-    enthusiasmLevel: 1,
-    languageName: 'TypeScript',  
   },
   cellState: {
     value: 3,
@@ -39,8 +34,7 @@ ReactDOM.render(
     <Fabric>
       <div>
         <Header /> 
-        <Hello />
-        <Cell index={0} />
+        <GameBoard />
       </div>
     </Fabric>
   </Provider>,

@@ -14,13 +14,7 @@ export interface Configuration {
     cellDimension: number;
 }
 
-export interface EnthusiasmStuff {
-    languageName: string;
-    enthusiasmLevel: number;
-}
-
 export interface StoreState {
     config: Configuration;
-    enthusiasm: EnthusiasmStuff;
     cellState: CellState;
 }

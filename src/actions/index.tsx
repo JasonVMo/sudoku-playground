@@ -1,13 +1,5 @@
 import * as constants from '../constants';
 
-export interface IncrementEnthusiasm {
-    type: constants.INCREMENT_ENTHUSIASM;
-}
-
-export interface DecrementEnthusiasm {
-    type: constants.DECREMENT_ENTHUSIASM;
-}
-
 export interface CellClick {
     type: constants.CELL_CLICK;
     index: number;
@@ -30,19 +22,7 @@ export interface CmdButtonClick {
 }
 
 export type CellAction = CellClick | CellSetValue | CmdButtonClick
-        | ClickNumButton | IncrementEnthusiasm | DecrementEnthusiasm;
-
-export function incrementEnthusiasm(): IncrementEnthusiasm {
-    return {
-        type: constants.INCREMENT_ENTHUSIASM
-    };
-}
-
-export function decrementEnthusiasm(): DecrementEnthusiasm {
-    return {
-        type: constants.DECREMENT_ENTHUSIASM
-    };
-}
+        | ClickNumButton;
 
 export function cellClick(index: number): CellClick {
     return {

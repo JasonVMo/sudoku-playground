@@ -8,7 +8,14 @@ import { CMD_BUTTON_CLICK,
 function configReducer(config: Configuration, action: CellAction): Configuration {
     switch (action.type) {
         case CMD_BUTTON_CLICK:
-            return { ...config, difficulty: action.cmdText };
+            if (action.cmdText === 'Easy' || action.cmdText === 'Medium' || action.cmdText === 'Hard') {
+                return { ...config, difficulty: action.cmdText };
+            } else {
+                return config;
+            }
+        case CELL_CLICK:
+            return { ...config, 
+                selectedIndex: config.selectedIndex === action.index ? 100 : action.index };
         default:
             return config;
     }

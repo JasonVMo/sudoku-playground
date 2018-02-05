@@ -17,17 +17,34 @@ export function mapStateToProps({ config }: StoreState) {
 
 function Header({ difficulty, penMode }: Props) {
     const headerStyle = {
-        background: 'blue',
+        display: 'flex',
+        flexFlow: 'column',
+        background: '#3a3a3a',
         height: '100px',
         textAlign: 'center',
     };
+
+    const diffHolderStyle = {
+        display: 'flex',
+        flexFlow: 'row'
+    };
     
+    const headerText = {
+        fontSize: '48px',
+        color: 'white',
+        textDecorationColor: 'white'
+    };
+
     return (
       <div style={headerStyle}>
-        Crappy Sudoku!
-        <CmdButton cmdText="Easy" selected={difficulty === 'Easy'} />
-        <CmdButton cmdText="Medium" selected={difficulty === 'Medium'} />
-        <CmdButton cmdText="Hard" selected={difficulty === 'Hard'} />
+        <div style={headerText}>
+            Crappy Sudoku!
+        </div>
+        <div style={diffHolderStyle}>
+            <CmdButton cmdText="Easy" selected={difficulty === 'Easy'} />
+            <CmdButton cmdText="Medium" selected={difficulty === 'Medium'} />
+            <CmdButton cmdText="Hard" selected={difficulty === 'Hard'} />
+        </div>
         {difficulty}
       </div>
     );

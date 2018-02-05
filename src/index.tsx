@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 
 import Header from './containers/Header';
 import GameBoard from './containers/GameBoard';
+import Footer from './containers/Footer';
 
 import { createStore } from 'redux';
 import { baseReducer } from './reducers/index';
@@ -35,8 +36,9 @@ ReactDOM.render(
       <div>
         <Header /> 
         <GameBoard />
+        <Footer />
       </div>
-    </Fabric>
+    </Fabric> 
   </Provider>,
   document.getElementById('root') as HTMLElement
 );

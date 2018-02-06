@@ -18,6 +18,8 @@ function configReducer(cells: Array<CellData>, config: Configuration, action: Ce
                     && config.selectedIndex < 81 
                     && config.selectedIndex >= 0) {
                 return { ...config, selectedValue: parseInt(action.cmdText, 10) };
+            } else if (action.cmdGroup === 'StartGame') {
+                return { ...config, selectedIndex: 100, selectedValue: 0 };
             } else {
                 return config;
             }

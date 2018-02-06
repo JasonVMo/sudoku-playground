@@ -39,7 +39,7 @@ export function ClearGridMarks(cells: Array<CellData>, index: number): void {
 }
 
 export function ClearMarksForPoint(cells: Array<CellData>, index: number): void {
-    if (!cells[index].shown) {
+    if (cells[index].shown) {
         ClearRowMarks(cells, index);
         ClearColMarks(cells, index);
         ClearGridMarks(cells, index);

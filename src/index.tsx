@@ -14,22 +14,19 @@ import Footer from './containers/Footer';
 import { createStore } from 'redux';
 import { baseReducer } from './reducers/index';
 import { StoreState } from './types/index';
+import { CreateInitialCells } from './helpers/CellHelpers';
 
 const store = createStore<StoreState>(baseReducer, {
-  config: {
+config: {
     selectedIndex: 0,
-    penMode: true,
-    difficulty: 'Easy',
+    selectedValue: 0,
+    penMode: true, 
+    difficulty: 'Easy', 
     cellDimension: 35,
-  },
-  cellState: {
-    value: 3,
-    userValue: 0,
-    shown: true,
-    selected: false
-  }
+  }, 
+  cells: CreateInitialCells()
 });
-
+ 
 ReactDOM.render(
   <Provider store={store}>
     <Fabric>

@@ -1,5 +1,11 @@
 // src/constants/index.tsx
 
+export const INITIALIZE_CELLS = 'INITIALIZE_CELLS';
+export type INITIALIZE_CELLS = typeof INITIALIZE_CELLS;
+
+export const NEW_GAME = 'NEW GAME';
+export type NEW_GAME = typeof NEW_GAME;
+
 export const CMD_BUTTON_CLICK = 'CMD_BUTTON_CLICK';
 export type CMD_BUTTON_CLICK = typeof CMD_BUTTON_CLICK;
 

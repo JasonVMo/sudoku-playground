@@ -1,5 +1,13 @@
 import * as constants from '../constants';
 
+export interface InitializeCells {
+    type: constants.INITIALIZE_CELLS;
+}
+
+export interface NewGame {
+    type: constants.NEW_GAME;
+}
+
 export interface CellClick {
     type: constants.CELL_CLICK;
     index: number;
@@ -18,11 +26,24 @@ export interface ClickNumButton {
 
 export interface CmdButtonClick {
     type: constants.CMD_BUTTON_CLICK;
+    cmdGroup: string;
     cmdText: string;
 }
 
 export type CellAction = CellClick | CellSetValue | CmdButtonClick
-        | ClickNumButton;
+        | ClickNumButton | InitializeCells | NewGame;
+
+export function initializeCells(): InitializeCells {
+    return {
+        type: constants.INITIALIZE_CELLS
+    };
+}
+
+export function newGame(): NewGame {
+    return {
+        type: constants.NEW_GAME
+    };
+}
 
 export function cellClick(index: number): CellClick {
     return {
@@ -46,9 +67,10 @@ export function clickNumButton(buttonVal: number): ClickNumButton {
     };
 }
 
-export function cmdButtonClick(cmdText: string): CmdButtonClick {
+export function cmdButtonClick(cmdGroup: string, cmdText: string): CmdButtonClick {
     return {
         type: constants.CMD_BUTTON_CLICK,
+        cmdGroup,
         cmdText
     };
 }

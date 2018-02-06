@@ -22,15 +22,15 @@ function Footer({ penMode }: Props) {
     
     return (
         <div style={footerStyle}>
-            <CmdButton cmdText="1" selected={penMode} />
-            <CmdButton cmdText="2" selected={penMode} />
-            <CmdButton cmdText="3" selected={penMode} />
-            <CmdButton cmdText="4" selected={penMode} />
-            <CmdButton cmdText="5" selected={penMode} />
-            <CmdButton cmdText="6" selected={penMode} />
-            <CmdButton cmdText="7" selected={penMode} />
-            <CmdButton cmdText="8" selected={penMode} />
-            <CmdButton cmdText="9" selected={penMode} />
+            <CmdButton cmdGroup="NumPress" cmdText="1" selected={penMode} />
+            <CmdButton cmdGroup="NumPress" cmdText="2" selected={penMode} />
+            <CmdButton cmdGroup="NumPress" cmdText="3" selected={penMode} />
+            <CmdButton cmdGroup="NumPress" cmdText="4" selected={penMode} />
+            <CmdButton cmdGroup="NumPress" cmdText="5" selected={penMode} />
+            <CmdButton cmdGroup="NumPress" cmdText="6" selected={penMode} />
+            <CmdButton cmdGroup="NumPress" cmdText="7" selected={penMode} />
+            <CmdButton cmdGroup="NumPress" cmdText="8" selected={penMode} />
+            <CmdButton cmdGroup="NumPress" cmdText="9" selected={penMode} />
         </div>
     );
 }

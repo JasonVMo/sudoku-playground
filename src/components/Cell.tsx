@@ -3,32 +3,48 @@
 
 import * as React from 'react';
 import * as actions from '../actions/';
+import { Marks } from '../components/Marks';
 import { StoreState } from '../types/index';
 import { connect, Dispatch } from 'react-redux';
+import * as uiconst from '../constants/UIConstants';
+import { BlankPencilArray } from '../helpers/CellHelpers';
 
 export interface Props {
     index: number;
     cellSize?: number;
     value?: number;
-    userValue?: number;
     shown?: boolean;
+    marks?: Array<boolean>;
     selected?: boolean;
+    selectedValue?: number;
     cellClicked?: () => void;
+}
+
+function CellBackground(selected: boolean, value: number, selectedVal: number, shown: boolean): string {
+    if (selected) {
+        return uiconst.cellSelectBg;
+    }
+    if (value === selectedVal && shown) {
+        return uiconst.cellHighlightBg;
+    }
+    return uiconst.cellBg;
 }
 
 function Cell({ 
         index, 
         cellSize = 35, 
         value = 0, 
-        userValue = 0, 
         shown = false, 
         selected = false, 
+        marks = BlankPencilArray(),
+        selectedValue = 0,
         cellClicked }: Props) {
     let centerVal = null;
+    let showAsHighlighted = (value === selectedValue && shown);
 
     const outerStyle = {
         border: '1px solid black',
-        background: selected ? '#D0D0D0' : 'white',
+        background: CellBackground(selected, value, selectedValue, shown),
         width: cellSize + 'px',
         height: cellSize + 'px',
         textAlign: 'center',
@@ -40,26 +56,31 @@ function Cell({
     const providedStyle = {
         verticalAlign: 'center',
         lineHeight: (cellSize - 1) + 'px',
-        textDecorationColor: shown ? 'black' : 'blue'
+        textDecorationColor: 'black',
+        color: showAsHighlighted ? 'green' : 'black'
     };
 
-    if ((value > 0 && shown) || userValue > 0) {
+    if (value > 0 && shown) {
         centerVal = <div style={providedStyle}>{value}</div>;
-    }
+    } 
+
     return (
         <div className="cell-boundary" style={outerStyle} onClick={cellClicked}>
-            {centerVal}
+            {(value > 0 && shown) 
+                ? centerVal 
+                : <Marks marks={marks} selectedValue={selectedValue} cellSize={cellSize} />}
         </div>
     );
 }
 
-export function mapStateToProps({cellState, config}: StoreState, ownProps: Props) {
+export function mapStateToProps({cells, config}: StoreState, ownProps: Props) {
   return {
     index: ownProps.index,
-    value: cellState.value,
-    shown: cellState.shown,
-    userValue: cellState.userValue,
+    value: cells[ownProps.index].value,
+    shown: cells[ownProps.index].shown,
     selected: config.selectedIndex === ownProps.index,
+    marks: cells[ownProps.index].marks,
+    selectedValue: config.selectedValue,
     cellSize: config.cellDimension
   };
 } 

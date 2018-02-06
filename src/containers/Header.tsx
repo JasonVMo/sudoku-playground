@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StoreState } from '../types/index';
 import { connect } from 'react-redux';
 import CmdButton from '../components/CmdButton';
+import * as uiconst from '../constants/UIConstants';
 
 export interface Props {
     difficulty: string;
@@ -19,8 +20,7 @@ function Header({ difficulty, penMode }: Props) {
     const headerStyle = {
         display: 'flex',
         flexFlow: 'column',
-        background: '#3a3a3a',
-        height: '100px',
+        background: uiconst.headerBg,
         textAlign: 'center',
     };
 
@@ -41,11 +41,14 @@ function Header({ difficulty, penMode }: Props) {
             Crappy Sudoku!
         </div>
         <div style={diffHolderStyle}>
-            <CmdButton cmdText="Easy" selected={difficulty === 'Easy'} />
-            <CmdButton cmdText="Medium" selected={difficulty === 'Medium'} />
-            <CmdButton cmdText="Hard" selected={difficulty === 'Hard'} />
+            <CmdButton cmdGroup="Difficulty" cmdText="Easy" selected={difficulty === 'Easy'} />
+            <CmdButton cmdGroup="Difficulty" cmdText="Medium" selected={difficulty === 'Medium'} />
+            <CmdButton cmdGroup="Difficulty" cmdText="Hard" selected={difficulty === 'Hard'} />
         </div>
-        {difficulty}
+        <div style={diffHolderStyle}>
+            <CmdButton cmdGroup="StartGame" cmdText="New Game" selected={false} />
+            {difficulty}
+        </div>
       </div>
     );
   }

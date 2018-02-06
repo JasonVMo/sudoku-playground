@@ -1,14 +1,14 @@
 // src/types/index.tsx
 
-export interface CellState {
+export interface CellData {
     value: number;
-    userValue: number;
     shown: boolean;
-    selected: boolean;
+    marks: Array<boolean>;
 }
 
 export interface Configuration {
     selectedIndex: number;
+    selectedValue: number;
     penMode: boolean;
     difficulty: string;
     cellDimension: number;
@@ -16,5 +16,5 @@ export interface Configuration {
 
 export interface StoreState {
     config: Configuration;
-    cellState: CellState;
+    cells: Array<CellData>;
 }

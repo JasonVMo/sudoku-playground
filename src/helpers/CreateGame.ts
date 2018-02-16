@@ -4,13 +4,13 @@ export function CreateGame(cells: Array<CellData>, difficulty: string): void {
     let targetToRemove: number = 0;
     switch (difficulty) {
         case 'Easy':
-            targetToRemove = 15;
+            targetToRemove = 20;
             break;
         case 'Medium':
-            targetToRemove = 25;
+            targetToRemove = 35;
             break;
         case 'Hard':
-            targetToRemove = 35;
+            targetToRemove = 50;
             break;
         default:
             targetToRemove = 0;

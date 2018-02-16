@@ -17,6 +17,7 @@ const store = createStore<StoreState>(baseReducer, {
         penMode: true, 
         difficulty: 'Easy', 
         cellDimension: 35,
+        solverResult: 'No result'
     }, 
     cells: CreateInitialCells()
 });

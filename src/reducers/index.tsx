@@ -1,13 +1,13 @@
 // src/reducers/index.tsx
 
 import { CellAction } from '../actions';
-import { StoreState, Configuration, CellData } from '../types/index';
+import { StoreState, Configuration, CellData, SolveResult } from '../types/index';
 import { CMD_BUTTON_CLICK, INITIALIZE_CELLS,
     CELL_CLICK } from '../constants/index';
-import { CreateInitialCells, CellsFromBoardString, SameRowColumnGrid } from '../helpers/CellHelpers';
+import { CreateInitialCells, CellsFromBoardString, SameRowColumnGrid, CreateSolveResult } from '../helpers/CellHelpers';
 import { GetBoardViaShifting } from '../helpers/FillBoard';
 import { CreateGame } from '../helpers/CreateGame';
-import { FillMarks } from '../helpers/Solvers';
+import { FillMarks, SolveOnce } from '../helpers/Solvers';
 
 function configReducer(cells: Array<CellData>, config: Configuration, action: CellAction): Configuration {
     switch (action.type) {
@@ -79,7 +79,22 @@ function cellsReducer(cells: Array<CellData>, config: Configuration, action: Cel
     }
 }
 
+function solverReducer(state: StoreState, action: CellAction): StoreState {
+    let result: SolveResult = CreateSolveResult(state.cells);
+
+    // now try to solve
+    SolveOnce(result);
+
+    return {
+        config: {...state.config, solverResult: result.result},
+        cells: result.success ? result.cells : state.cells,
+    };
+}
+
 export function baseReducer(state: StoreState, action: CellAction): StoreState {
+    if (action.type === CMD_BUTTON_CLICK && action.cmdGroup === 'Solver') {
+        return solverReducer(state, action);
+    }
     return {
         config: configReducer(state.cells, state.config, action),
         cells: cellsReducer(state.cells, state.config, action)

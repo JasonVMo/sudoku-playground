@@ -1,6 +1,7 @@
 import { CellData, SolveResult } from '../types/index';
-import { GetRow, GetColumn, GetGrid } from '../helpers/CellHelpers';
+import { GetRow, GetColumn, GetGrid, CellName } from '../helpers/RowCol';
 import { BoardIterator, IteratorType } from '../helpers/BoardIterator';
+import { CellUpdate } from '../helpers/CellUpdate';
 
 export function ClearRowMarks(cells: Array<CellData>, index: number): void {
     let probe: number = index - (index % 9);
@@ -88,19 +89,12 @@ function ClearMarkForCell(result: SolveResult, index: number, value: number): bo
     return false;
 }
 
-function CellName(index: number): string {
-    let rowVal: number = GetRow(index) + 1;
-    let col: number = GetColumn(index);
-    const letters: Array<string> = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
-    return letters[col] + rowVal;
-}
-
-function SetCellSolved(result: SolveResult, index: number, testVal: number | undefined = undefined): void {
+function SetCellSolved(result: SolveResult, index: number, testVal: number | undefined = undefined): boolean {
     if (!result.cells[index].shown) {
         let val: number = result.cells[index].value;
         if (testVal !== undefined && testVal !== val) {
             result.result += ' ERROR! ' + testVal + ' does not equal ' + val;
-            return;
+            return false;
         }
         // valid solve
         result.cells[index].shown = true;
@@ -110,9 +104,27 @@ function SetCellSolved(result: SolveResult, index: number, testVal: number | und
             result.result += '<' + CellName(i) + '>';
             ClearMarkForCell(result, i, val);
         }
+        return true;
     }
-    
+    return false;
 }
+
+/*
+export function CheckRowColGridForSingles(result: SolveResult, counts: Array<Array<number>>, iterType: IteratorType): boolean {
+    for (let i: number = 0; i < 9; i++) {
+        for (let val: number = 0; val < 9; val++) {
+            if (counts[i][val] === 1) {
+                let seed: number;
+                if (iterType === IteratorType.Row) {
+                    seed = 
+                }
+                let iter: BoardIterator(iterType, , false);
+            }
+        }
+    }
+    return false;
+}
+*/
 
 export function CheckForSingles(result: SolveResult): boolean {
     // look for a single candidate in a given cell
@@ -123,13 +135,27 @@ export function CheckForSingles(result: SolveResult): boolean {
                 for (let m = 0; m < 9; m++) {
                     if (result.cells[i].marks[m]) {
                         result.result = 'Only one possible candidate for cell';
-                        SetCellSolved(result, i, m + 1);
-                        return true;
+                        return SetCellSolved(result, i, m + 1);
                     }
                 }
             }
         }
     }
+    // look for candidates per row/col/grid
+    for (let i: number = 0; i < 9; i++) {
+        for (let val: number = 0; val < 9; val++) {
+            if (result.rowCount[i][val] === 1) {
+                let iter: BoardIterator = new BoardIterator(IteratorType.Row, i * 9, false);
+                for (let index: number = iter.begin(); iter.valid(); index = iter.next()) {
+                    if (result.cells[index].marks[val]) {
+                        result.result = 'Only one value in row';
+                        return SetCellSolved(result, index, val + 1);
+                    }
+                }
+            }
+        }
+    }
+
     return false;
 }
 

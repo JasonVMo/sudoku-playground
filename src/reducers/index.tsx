@@ -1,13 +1,17 @@
 // src/reducers/index.tsx
 
 import { CellAction } from '../actions';
-import { StoreState, Configuration, CellData, SolveResult } from '../types/index';
+import { StoreState, Configuration, CellData } from '../types/index';
 import { CMD_BUTTON_CLICK, INITIALIZE_CELLS,
     CELL_CLICK } from '../constants/index';
-import { CreateInitialCells, CellsFromBoardString, SameRowColumnGrid, CreateSolveResult } from '../helpers/CellHelpers';
+import { CreateInitialCells, CellsFromBoardString } from '../helpers/CellHelpers';
 import { GetBoardViaShifting } from '../helpers/FillBoard';
 import { CreateGame } from '../helpers/CreateGame';
-import { FillMarks, SolveOnce } from '../helpers/Solvers';
+import { FillMarks } from '../helpers/Solvers';
+import { SameRowColumnGrid } from '../helpers/RowCol';
+import { SolveResult } from '../solvers/SolveResult';
+import { SolveCell } from '../solvers/SolveCell';
+import { SingleChoice, SingleRowColGrid } from '../solvers/SingleChoice';
 
 function configReducer(cells: Array<CellData>, config: Configuration, action: CellAction): Configuration {
     switch (action.type) {
@@ -34,13 +38,6 @@ function configReducer(cells: Array<CellData>, config: Configuration, action: Ce
         default:
             return config;
     }
-}
-
-export interface CellData {
-    value: number;
-    userValue: number;
-    shown: boolean;
-    selected: boolean;
 }
 
 function cellsReducer(cells: Array<CellData>, config: Configuration, action: CellAction): Array<CellData> {
@@ -79,21 +76,39 @@ function cellsReducer(cells: Array<CellData>, config: Configuration, action: Cel
     }
 }
 
+function numPressReducer(state: StoreState, action: CellAction, cmdText: string): StoreState {
+    if (state.config.selectedIndex < 81 && state.config.selectedIndex >= 0) {
+        let result: SolveResult = new SolveResult(state.cells);
+        let newValue: number = parseInt(cmdText, 10);
+        if (SolveCell(state.config.selectedIndex, newValue, result)) {
+            return {
+                config: {...state.config, solverResult: result.resultText() },
+                cells: result.reducedCellArray(),
+            };
+        }
+    }
+    return state;
+}
+
 function solverReducer(state: StoreState, action: CellAction): StoreState {
-    let result: SolveResult = CreateSolveResult(state.cells);
-
-    // now try to solve
-    SolveOnce(result);
-
-    return {
-        config: {...state.config, solverResult: result.result},
-        cells: result.success ? result.cells : state.cells,
-    };
+    let result: SolveResult = new SolveResult(state.cells);
+    if (SingleChoice(result) || SingleRowColGrid(result)) {
+        return {
+            config: {...state.config, solverResult: result.resultText() },
+            cells: result.reducedCellArray(),
+        };
+    }
+    return state;
 }
 
 export function baseReducer(state: StoreState, action: CellAction): StoreState {
-    if (action.type === CMD_BUTTON_CLICK && action.cmdGroup === 'Solver') {
-        return solverReducer(state, action);
+    if (action.type === CMD_BUTTON_CLICK) {
+        if (action.cmdGroup === 'Solver') {
+            return solverReducer(state, action);
+        }
+        else if (action.cmdGroup === 'NumPress') {
+            return numPressReducer(state, action, action.cmdText);
+        }
     }
     return {
         config: configReducer(state.cells, state.config, action),

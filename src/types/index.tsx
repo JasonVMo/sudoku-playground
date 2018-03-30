@@ -1,6 +1,7 @@
 // src/types/index.tsx
 
 export interface CellData {
+    index: number;
     value: number;
     shown: boolean;
     marks: Array<boolean>;
@@ -20,7 +21,7 @@ export interface StoreState {
     cells: Array<CellData>;
 }
 
-export interface SolveResult {
+export interface SolveResult2 {
     success: boolean;
     cells: Array<CellData>;
     rowCount: Array<Array<number>>;

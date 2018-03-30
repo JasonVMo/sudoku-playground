@@ -1,3 +1,5 @@
+import { CellData } from "../types";
+
 export function GetRow(index: number): number {
     return (Math.floor(index / 9));
 }
@@ -38,4 +40,60 @@ export function CellName(index: number): string {
     let col: number = GetColumn(index) + 1;
     const letters: Array<string> = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
     return letters[rowVal] + col;
+}
+
+export enum FilterType {
+    Row,
+    Col,
+    Grid,
+    RowColGrid
+}
+
+export function GetCellSubarray(cells: Array<CellData>, filter: FilterType, keyIndex: number, excludeKey: boolean = true): Array<CellData> {
+    let checkRow: boolean = (filter === FilterType.Row || filter === FilterType.RowColGrid);
+    let keyRow: number = GetRow(keyIndex);
+
+    let checkCol: boolean = (filter === FilterType.Col || filter === FilterType.RowColGrid);
+    let keyCol: number = GetColumn(keyIndex);
+
+    let checkGrid: boolean = (filter === FilterType.Grid || filter === FilterType.RowColGrid);
+    let keyGrid: number = GetGrid(keyIndex);
+
+    return cells.filter((currentValue: CellData, index: number) => {
+        if (!excludeKey || index !== keyIndex) {
+            if ((checkRow && GetRow(index) === keyRow)
+                    || (checkCol && GetColumn(index) === keyCol)
+                    || (checkGrid && GetGrid(index) === keyGrid)) {
+                return true;
+            }
+        }
+        return false;
+    });
+}
+
+export function FilterToText(filterType: FilterType): string {
+    switch (filterType) {
+        case FilterType.Row:
+            return 'Row';
+        case FilterType.Col:
+            return 'Column';
+        case FilterType.Grid:
+            return 'Grid';
+        case FilterType.RowColGrid:
+            return 'RowColGrid';
+        default:
+            return '';
+    }
+}
+
+export function KeyIndexOfType(offset: number, type: FilterType): number {
+    switch (type) {
+        case FilterType.Row:
+            return offset * 9;
+        case FilterType.Col:
+            return offset;
+        case FilterType.Grid:
+            return (Math.floor(offset / 3) * 27) + ((offset % 3) * 3);
+    }
+    return offset;
 }

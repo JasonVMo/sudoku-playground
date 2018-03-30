@@ -1,7 +1,6 @@
-import { CellData, SolveResult } from '../types/index';
+import { CellData, SolveResult2 } from '../types/index';
 import { GetRow, GetColumn, GetGrid, CellName } from '../helpers/RowCol';
 import { BoardIterator, IteratorType } from '../helpers/BoardIterator';
-import { CellUpdate } from '../helpers/CellUpdate';
 
 export function ClearRowMarks(cells: Array<CellData>, index: number): void {
     let probe: number = index - (index % 9);
@@ -72,7 +71,7 @@ function CountMarks(marks: Array<boolean>): number {
     return count;
 }
 
-function ClearMarkForCell(result: SolveResult, index: number, value: number): boolean {
+function ClearMarkForCell(result: SolveResult2, index: number, value: number): boolean {
     let valIndex = value - 1;
     if (!result.cells[index].shown && result.cells[index].marks[valIndex]) {
         if (result.cells[index].value === value) {
@@ -89,7 +88,7 @@ function ClearMarkForCell(result: SolveResult, index: number, value: number): bo
     return false;
 }
 
-function SetCellSolved(result: SolveResult, index: number, testVal: number | undefined = undefined): boolean {
+function SetCellSolved(result: SolveResult2, index: number, testVal: number | undefined = undefined): boolean {
     if (!result.cells[index].shown) {
         let val: number = result.cells[index].value;
         if (testVal !== undefined && testVal !== val) {
@@ -126,7 +125,7 @@ export function CheckRowColGridForSingles(result: SolveResult, counts: Array<Arr
 }
 */
 
-export function CheckForSingles(result: SolveResult): boolean {
+export function CheckForSingles(result: SolveResult2): boolean {
     // look for a single candidate in a given cell
     for (let i: number = 0; i < 81; i++) {
         if (!result.cells[i].shown) {
@@ -159,6 +158,6 @@ export function CheckForSingles(result: SolveResult): boolean {
     return false;
 }
 
-export function SolveOnce(result: SolveResult): void {
+export function SolveOnce(result: SolveResult2): void {
     result.success = CheckForSingles(result);
 }

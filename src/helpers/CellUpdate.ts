@@ -56,6 +56,7 @@ export function ApplyUpdateToCell(cell: CellData, update: CellUpdate, revert: bo
 export function UpdateOrRevertCell(cell: CellData, revert: boolean, ...updates: Array<CellUpdate>) : CellData {
     // copy the values to modify them without modifying cell
     let newCell: CellData = {
+        index: cell.index,
         value: cell.value,
         shown: cell.shown,
         marks: cell.marks.slice(0)
@@ -82,25 +83,4 @@ export function UpdateCell(cell: CellData, ...updates: Array<CellUpdate>) : Cell
 */
 export function RevertCell(cell: CellData, ...reversions: Array<CellUpdate>) : CellData {
     return UpdateOrRevertCell(cell, true, ...reversions);
-}
-
-/*
-    Turn an array of updates that are sequential into an array of arrays where the first array is an
-    81 place array corresponding to cell index
-*/
-export function IndexUpdatesFromUpdateList(updates: Array<CellUpdate>) : Array<Array<CellUpdate>> {
-    let result: Array<Array<CellUpdate>> = [];
-    result.length = 81;
-
-    for (let update of updates) {
-        let index = update.index();
-        if (index >= 0 && index < 81) {
-            if (!result[index]) {
-                result[index] = [];
-            }
-            result[index].push(update);
-        }
-    }
-
-    return result;
 }

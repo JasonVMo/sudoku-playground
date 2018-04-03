@@ -1,4 +1,4 @@
-import { CellData, SolveResult2 } from '../types/index';
+import { CellData } from '../types/index';
 
 export function BlankPencilArray(): Array<boolean> {
     return [false, false, false, false, false, false, false, false, false];
@@ -24,36 +24,6 @@ export function BlankCountSet(): Array<Array<number>> {
     for (let i = 0; i < 9; i++) {
         result[i] = BlankCountArray();
     }
-    return result;
-}
-
-export function CreateSolveResult(initialCells: Array<CellData>): SolveResult2 {
-    let result: SolveResult2 = {
-        success: false, 
-        result: 'Failed to solve',
-        rowCount: BlankCountSet(),
-        colCount: BlankCountSet(),
-        gridCount: BlankCountSet(),
-        cells: DuplicateCells(initialCells) 
-    };
-
-    // now count the marks
-    for (let i = 0; i < 81; i++) {
-        if (!initialCells[i].shown) {
-            let row = Math.floor(i / 9);
-            let col = i % 9;
-            let grid = (Math.floor(row / 3) * 3) + Math.floor(col / 3);
-            for (let m = 0; m < 81; m++) {
-                if (initialCells[i].marks[m]) {
-                    result.rowCount[row][m]++;
-                    result.colCount[col][m]++;
-                    result.gridCount[grid][m]++;
-                }
-            }
-        }
-    }
-
-    // finally return the new solver result
     return result;
 }
 

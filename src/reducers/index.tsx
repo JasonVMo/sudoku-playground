@@ -8,25 +8,12 @@ import { CreateInitialCells, CellsFromBoardString } from '../helpers/CellHelpers
 import { GetBoardViaShifting } from '../helpers/FillBoard';
 import { CreateGame } from '../helpers/CreateGame';
 import { FillMarks } from '../helpers/Solvers';
-import { SameRowColumnGrid } from '../helpers/RowCol';
 import { SolveResult } from '../solvers/SolveResult';
 import { SolveCell } from '../solvers/SolveCell';
 import { SingleChoice, SingleRowColGrid } from '../solvers/SingleChoice';
 
 function configReducer(cells: Array<CellData>, config: Configuration, action: CellAction): Configuration {
     switch (action.type) {
-        case CMD_BUTTON_CLICK:
-            if (action.cmdGroup === 'Difficulty') {
-                return { ...config, difficulty: action.cmdText };
-            } else if (action.cmdGroup === 'NumPress' 
-                    && config.selectedIndex < 81 
-                    && config.selectedIndex >= 0) {
-                return { ...config, selectedValue: parseInt(action.cmdText, 10) };
-            } else if (action.cmdGroup === 'StartGame') {
-                return { ...config, selectedIndex: 100, selectedValue: 0 };
-            } else {
-                return config;
-            }
         case CELL_CLICK:
             let selectedIdx: number = config.selectedIndex === action.index ? 100 : action.index;
             let selectedVal: number = config.selectedIndex === action.index ? 0 : config.selectedValue;
@@ -44,33 +31,6 @@ function cellsReducer(cells: Array<CellData>, config: Configuration, action: Cel
     switch (action.type) {
         case INITIALIZE_CELLS:
             return CreateInitialCells();
-        case CMD_BUTTON_CLICK:
-            if (action.cmdGroup === 'StartGame') {
-                let newBoard: string = GetBoardViaShifting();
-                let newCells: Array<CellData> = CellsFromBoardString(newBoard);
-                CreateGame(newCells, config.difficulty);
-                FillMarks(newCells);
-                return newCells;
-            } else if (action.cmdGroup === 'NumPress' && config.selectedIndex < 81 && config.selectedIndex >= 0) {
-                // if this cell is not shown, try to fill it in
-                if (!cells[config.selectedIndex].shown) {
-                    let newValue: number = parseInt(action.cmdText, 10);
-                    if (newValue === cells[config.selectedIndex].value) {
-                        return cells.map((cellValue: CellData, index: number) => {
-                            if (index === config.selectedIndex) {
-                                return { ...cellValue, shown: true };
-                            } else if (SameRowColumnGrid(config.selectedIndex, index) 
-                                    && cellValue.marks[newValue - 1]) {
-                                return { ...cellValue, marks: cellValue.marks.map((val: boolean, idx: number) => {
-                                    return (val && idx !== (newValue - 1));
-                                })};
-                            }
-                            return cellValue;
-                        });
-                    }
-                }
-            }
-            return cells;
         default:
             return cells;
     }
@@ -82,7 +42,7 @@ function numPressReducer(state: StoreState, action: CellAction, cmdText: string)
         let newValue: number = parseInt(cmdText, 10);
         if (SolveCell(state.config.selectedIndex, newValue, result)) {
             return {
-                config: {...state.config, solverResult: result.resultText() },
+                config: {...state.config, solverResult: result.resultText(), selectedValue: newValue },
                 cells: result.reducedCellArray(),
             };
         }
@@ -101,14 +61,52 @@ function solverReducer(state: StoreState, action: CellAction): StoreState {
     return state;
 }
 
+function newGameReducer(state: StoreState, action: CellAction): StoreState {
+    let newBoard: string = GetBoardViaShifting();
+    let newCells: Array<CellData> = CellsFromBoardString(newBoard);
+    CreateGame(newCells, state.config.difficulty);
+    FillMarks(newCells);
+
+    return {
+        config: {...state.config, selectedIndex: 100, selectedValue: 0 },
+        cells: newCells
+    };
+}
+
+function cellClickReducer(state: StoreState, index: number): StoreState {
+    let selectedIdx: number = state.config.selectedIndex === index ? 100 : index;
+    let selectedVal: number = state.config.selectedIndex === index ? 0 : state.config.selectedValue;
+    if (selectedIdx < 81 && state.cells[selectedIdx].shown) {
+        selectedVal = state.cells[selectedIdx].value;
+    }
+    return { 
+        config: { ...state.config, selectedIndex: selectedIdx, selectedValue: selectedVal },
+        cells: state.cells
+    };
+}
+
 export function baseReducer(state: StoreState, action: CellAction): StoreState {
-    if (action.type === CMD_BUTTON_CLICK) {
-        if (action.cmdGroup === 'Solver') {
-            return solverReducer(state, action);
-        }
-        else if (action.cmdGroup === 'NumPress') {
-            return numPressReducer(state, action, action.cmdText);
-        }
+    switch (action.type) {
+        case CMD_BUTTON_CLICK:
+            switch (action.cmdGroup) {
+                case 'Solver':
+                    return solverReducer(state, action);
+                case 'NumPress':
+                    return numPressReducer(state, action, action.cmdText);
+                case 'StartGame':
+                    return newGameReducer(state, action);
+                case 'Difficulty':
+                    return {
+                        config: { ...state.config, difficulty: action.cmdText },
+                        cells: state.cells
+                    };
+                default:
+                    // fallthrough
+            }
+            break;
+        case CELL_CLICK:
+            cellClickReducer(state, action.index);
+            break;
     }
     return {
         config: configReducer(state.cells, state.config, action),

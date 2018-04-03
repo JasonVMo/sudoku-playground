@@ -20,12 +20,3 @@ export interface StoreState {
     config: Configuration;
     cells: Array<CellData>;
 }
-
-export interface SolveResult2 {
-    success: boolean;
-    cells: Array<CellData>;
-    rowCount: Array<Array<number>>;
-    colCount: Array<Array<number>>;
-    gridCount: Array<Array<number>>;
-    result: string;
-}

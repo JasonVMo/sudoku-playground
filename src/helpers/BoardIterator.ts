@@ -1,97 +1,122 @@
-export enum IteratorType {
-    Row,
-    Column,
-    Grid,
-    RowColGrid
+import { GetRow, GetColumn, GetGrid, GetKeyForGrid } from "./RowCol";
+
+export interface IBoardIterator {
+    length(): number;
+    get(): number;
+    next(): boolean;
 }
 
-const gridOffset: Array<number> = [0, 1, 2, 9, 10, 11, 18, 19, 20, 81];
+export class RowIterator implements IBoardIterator {
+    private current: number;
+    private skipValue: number|undefined;
 
-export class BoardIterator {
+    constructor(key: number, skipKey: boolean) {
+        this.current = (GetRow(key) * 9);
+        this.skipValue = skipKey ? key : undefined;
+        // make sure the skip value isn't the first entry
+        if (skipKey && this.current === key) {
+            this.current++;
+        }
+    }
+
+    length(): number { return this.skipValue ? 8 : 9; }
+    get(): number { return this.current; }
+    next(): boolean {
+        let valid: boolean = true;
+        do {
+            this.current++;
+            valid = (this.current % 9) !== 0;
+        } while (valid && this.skipValue && this.skipValue === this.current);
+        return valid;
+    }
+}
+
+export class ColumnIterator implements IBoardIterator {
+    private current: number;
+    private skipValue: number|undefined;
+
+    constructor(key: number, skipKey: boolean) {
+        this.current = GetColumn(key);
+        this.skipValue = skipKey ? key : undefined;
+        // ensure we aren't skipping the first entry
+        if (skipKey && this.current === key) {
+            this.current += 9;
+        }
+    }
+
+    length(): number { return this.skipValue !== undefined ? 8 : 9; }
+    get(): number { return this.current; }
+    next(): boolean {
+        let valid: boolean = true;
+        do {
+            this.current += 9;
+            valid = this.current < 81;
+        } while (valid && this.skipValue !== undefined && this.skipValue === this.current);
+        return valid;
+    }
+}
+
+export class GridIterator implements IBoardIterator {
     private start: number;
     private step: number;
-    private seedIndex: number;
-    private skipIndex: boolean;
-    private iterType: IteratorType;
-    private rowColGrid: boolean;
+    private skipValue: number|undefined;
 
-    constructor(iterType: IteratorType, seedIndex: number, skipSeed: boolean = true) {
-        this.seedIndex = seedIndex;
-        this.skipIndex = skipSeed;
-        this.setTypeInternal(iterType, true);
-    }
-
-    setType(iterType: IteratorType) { this.setTypeInternal(iterType, true); }
-
-    valid(): boolean {
-        return this.step < 9;
-    }
-
-    begin(): number {
+    constructor(key: number, skipKey: boolean) {
+        this.start = GetKeyForGrid(GetGrid(key));
         this.step = 0;
-        return this.get();
-    }
-
-    end(): number { return 81; }
-
-    get(): number {
-        if (this.step >= 9) {
-            return 81;
-        }
-        switch (this.iterType) {
-            case IteratorType.Column:
-                return this.start + (this.step * 9);
-            case IteratorType.Grid:
-                return this.start + (gridOffset[this.step]);
-            case IteratorType.Row:
-            default:
-                return this.start + this.step;
-        }
-    }
-
-    next(): number {
-        this.step++;
-        if (this.step >= 9 && this.rowColGrid && this.iterType !== IteratorType.Grid) {
-            if (this.iterType === IteratorType.Row) {
-                this.setTypeInternal(IteratorType.Column, false);
-            } else if (this.iterType === IteratorType.Column) {
-                this.setTypeInternal(IteratorType.Grid, false);
-            }
-            return this.begin();
-        }
-        let result: number = this.get();
-        if (this.skipIndex !== undefined && this.seedIndex === result) {
+        this.skipValue = skipKey ? key : undefined;
+        if (skipKey && this.get() === key) {
             this.step++;
-            result = this.get();
         }
-        return result;
     }
 
-    private setTypeInternal(iterType: IteratorType, fromUser: boolean): void {
-        if (fromUser) {
-            this.rowColGrid = (iterType === IteratorType.RowColGrid);
-            if (this.rowColGrid) {
-                iterType = IteratorType.Row;
-            }
-        }
-        this.iterType = iterType;
-        this.step = 0;
-        let row = Math.floor(this.seedIndex / 9);
-        let col = this.seedIndex % 9;
-        
-        switch (iterType) {
-            case IteratorType.Row:
-                this.start = row * 9;
-                break;
-            case IteratorType.Column:
-                this.start = col;
-                break;
-            case IteratorType.Grid:
-                this.start = (Math.floor(col / 3) * 3) + ((Math.floor(row / 3) * 3) * 9);
-                break;
-            default:
-                this.start = 0;
-                break;
+    length(): number { return this.skipValue !== undefined ? 8 : 9; }
+    get(): number {
+        const gridOffset: Array<number> = [0, 1, 2, 9, 10, 11, 18, 19, 20];
+        return this.start + gridOffset[this.step];
+    }
+    next(): boolean {
+        do {
+            this.step++;
+        } while (this.step < 9 && this.skipValue !== undefined && this.skipValue === this.get());
+        return (this.step < 9);
+    }
+}
+
+export class RowColGridIterator implements IBoardIterator {
+    private current: number;
+    private row: number;
+    private col: number;
+    private grid: number;
+    private skipValue: number|undefined;
+
+    constructor(key: number, skipKey: boolean) { 
+        this.skipValue = skipKey ? key : undefined;
+        this.current = 0;
+        this.row = GetRow(key);
+        this.col = GetColumn(key);
+        this.grid = GetGrid(key);
+        this.ensureCurrentValid();
+    }
+
+    length(): number { return this.skipValue !== undefined ? 21 : 20; }
+    get(): number {
+        return this.current;
+    }
+    next(): boolean {
+        do {
+            this.current++;
+            this.ensureCurrentValid();
+        } while (this.current < 81 && this.skipValue !== undefined && this.skipValue === this.current);
+        return this.current < 81;
+    }
+
+    private ensureCurrentValid(): void {
+        while (this.current < 81
+                && GetRow(this.current) !== this.row
+                && GetColumn(this.current) !== this.col
+                && GetGrid(this.current) !== this.grid) {
+            this.current++;
         }
     }
 }

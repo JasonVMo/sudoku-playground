@@ -1,4 +1,5 @@
 import { CellData } from "../types";
+import { IBoardIterator, RowIterator, ColumnIterator, GridIterator, RowColGridIterator } from "./BoardIterator";
 
 export function GetRow(index: number): number {
     return (Math.floor(index / 9));
@@ -10,6 +11,10 @@ export function GetColumn(index: number): number {
 
 export function GetGrid(index: number): number {
     return (Math.floor(GetRow(index) / 3) * 3) + Math.floor(GetColumn(index) / 3);
+}
+
+export function GetKeyForGrid(gridNum: number): number {
+    return ((gridNum % 3) * 3) + (Math.floor(gridNum / 3) * 27);
 }
 
 export function SameRow(base: number, probe: number): boolean {
@@ -69,6 +74,33 @@ export function GetCellSubarray(cells: Array<CellData>, filter: FilterType, keyI
         }
         return false;
     });
+}
+
+function IterFromFilter(filter: FilterType, key: number, skipKey: boolean): IBoardIterator {
+    switch (filter) {
+        case FilterType.Row:
+            return new RowIterator(key, skipKey);
+        case FilterType.Col:
+            return new ColumnIterator(key, skipKey);
+        case FilterType.Grid:
+            return new GridIterator(key, skipKey);
+        case FilterType.RowColGrid:
+            return new RowColGridIterator(key, skipKey);
+    }
+}
+
+export function FillCellArray(result: Array<CellData>, cells: Array<CellData>, filter: FilterType, keyIndex: number, excludeKey: boolean) {
+    // make sure the result array is big enough for the result set
+    let iter: IBoardIterator = IterFromFilter(filter, keyIndex, excludeKey);
+    let expectedLength: number = iter.length();
+    if (result.length !== expectedLength) {
+        result.length = expectedLength;
+    }
+    let insertPoint: number = 0;
+
+    do {
+        result[insertPoint++] = cells[iter.get()];
+    } while (iter.next());
 }
 
 export function FilterToText(filterType: FilterType): string {

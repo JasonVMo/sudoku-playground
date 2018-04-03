@@ -4,29 +4,6 @@ export function BlankPencilArray(): Array<boolean> {
     return [false, false, false, false, false, false, false, false, false];
 }
 
-export function DuplicateCells(cells: Array<CellData>): Array<CellData> {
-    return cells.map((value: CellData) => {
-        return {
-            ...value, 
-            marks: value.marks.map((mark: boolean) => {
-                return mark;
-            })
-        };
-    });
-}
-
-export function BlankCountArray(): Array<number> {
-    return [0, 0, 0, 0, 0, 0, 0, 0, 0];
-}
-
-export function BlankCountSet(): Array<Array<number>> {
-    let result: Array<Array<number>> = new Array<Array<number>>(9);
-    for (let i = 0; i < 9; i++) {
-        result[i] = BlankCountArray();
-    }
-    return result;
-}
-
 export function CreateInitialCells(): Array<CellData> {
   let cells: Array<CellData> = new Array<CellData>(81);
   for (let i: number = 0; i < 81; i++) {

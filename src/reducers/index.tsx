@@ -7,10 +7,10 @@ import { CMD_BUTTON_CLICK, INITIALIZE_CELLS,
 import { CreateInitialCells, CellsFromBoardString } from '../helpers/CellHelpers';
 import { GetBoardViaShifting } from '../helpers/FillBoard';
 import { CreateGame } from '../helpers/CreateGame';
-import { FillMarks } from '../helpers/Solvers';
 import { SolveResult } from '../solvers/SolveResult';
 import { SolveCell } from '../solvers/SolveCell';
 import { SingleChoice, SingleRowColGrid } from '../solvers/SingleChoice';
+import { AddMarksForBoard } from '../helpers/Marks';
 
 function configReducer(cells: Array<CellData>, config: Configuration, action: CellAction): Configuration {
     switch (action.type) {
@@ -61,11 +61,20 @@ function solverReducer(state: StoreState, action: CellAction): StoreState {
     return state;
 }
 
+function fillMarksReducer(state: StoreState): StoreState {
+    let result: SolveResult = new SolveResult(state.cells);
+    AddMarksForBoard(result.cells, result.updates);
+
+    return {
+        config: state.config,
+        cells: result.reducedCellArray(),
+    };
+}
+
 function newGameReducer(state: StoreState, action: CellAction): StoreState {
     let newBoard: string = GetBoardViaShifting();
     let newCells: Array<CellData> = CellsFromBoardString(newBoard);
     CreateGame(newCells, state.config.difficulty);
-    FillMarks(newCells);
 
     return {
         config: {...state.config, selectedIndex: 100, selectedValue: 0 },
@@ -91,6 +100,8 @@ export function baseReducer(state: StoreState, action: CellAction): StoreState {
             switch (action.cmdGroup) {
                 case 'Solver':
                     return solverReducer(state, action);
+                case 'FillMarks':
+                    return fillMarksReducer(state);
                 case 'NumPress':
                     return numPressReducer(state, action, action.cmdText);
                 case 'StartGame':
@@ -107,6 +118,8 @@ export function baseReducer(state: StoreState, action: CellAction): StoreState {
         case CELL_CLICK:
             cellClickReducer(state, action.index);
             break;
+        default:
+            // fallthrough
     }
     return {
         config: configReducer(state.cells, state.config, action),

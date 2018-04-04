@@ -1,4 +1,4 @@
-import { GetRow, GetColumn, GetGrid, GetKeyForGrid, SameRow, SameColumn, SameGrid, CellName } from "./RowCol";
+import { GetRow, GetColumn, GetGrid, GetKeyForGrid, SameRow, SameColumn, SameGrid, CellName } from './RowCol';
 
 test('GetRow: test suite', () => {
     expect(GetRow(0)).toBe(0);

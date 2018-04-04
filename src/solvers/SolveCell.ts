@@ -1,14 +1,13 @@
-import { SolveResult } from "./SolveResult";
-import { UpdateType } from "../helpers/CellUpdate";
-import { GetCellSubarray, FilterType } from "../helpers/RowCol";
-import { CellData } from "../types";
+import { SolveResult } from './SolveResult';
+import { UpdateType } from '../helpers/CellUpdate';
+import { GetCellSubarray, FilterType } from '../helpers/RowCol';
+import { CellData } from '../types';
 
-export function SolveCell(index: number, value: number, result: SolveResult) : boolean {
+export function SolveCell(index: number, value: number, result: SolveResult): boolean {
     if (result.cells[index].value !== value) {
         result.operation += 'ERROR: Wrong value';
         return false;
-    }
-    else if (result.cells[index].shown) {
+    } else if (result.cells[index].shown) {
         result.operation += 'Already solved';
         return false;
     }

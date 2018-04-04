@@ -1,7 +1,7 @@
-import { SolveResult } from "./SolveResult";
-import { GetCellSubarray, FilterType, FilterToText, KeyIndexOfType } from "../helpers/RowCol";
-import { CellData } from "../types";
-import { SolveCell } from "./SolveCell";
+import { SolveResult } from './SolveResult';
+import { GetCellSubarray, FilterType, FilterToText, KeyIndexOfType } from '../helpers/RowCol';
+import { CellData } from '../types';
+import { SolveCell } from './SolveCell';
 
 export function SingleChoice(result: SolveResult): boolean {
     // first look for there being only one viable choice in a cell
@@ -13,8 +13,7 @@ export function SingleChoice(result: SolveResult): boolean {
                     if (foundVal) {
                         foundVal = undefined;
                         break;
-                    }
-                    else {
+                    } else {
                         foundVal = m + 1;
                     }
                 }

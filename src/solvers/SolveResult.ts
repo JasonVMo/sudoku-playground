@@ -1,5 +1,5 @@
-import { CellData } from "../types";
-import { CellUpdate, UpdateType, UpdateCell, RevertCell } from "../helpers/CellUpdate";
+import { CellData } from '../types';
+import { CellUpdate, UpdateType, UpdateCell, RevertCell } from '../helpers/CellUpdate';
 
 const resultTextDelim: string = '|';
 const resultTextClosing: string = '\n';
@@ -28,8 +28,7 @@ export class SolveResult {
         for (let update of this.updates) {
             if (updateText) {
                 updateText = updateText + resultTextDelim + update.text();
-            }
-            else {
+            } else {
                 updateText = update.text();
             }
         }
@@ -46,7 +45,8 @@ export class SolveResult {
                 if (!updateList[index]) {
                     return { ...cellValue };
                 }
-                return !undo ? UpdateCell(cellValue, ...updateList[index]) : RevertCell(cellValue, ...updateList[index]);
+                return !undo ? UpdateCell(cellValue, ...updateList[index]) 
+                            : RevertCell(cellValue, ...updateList[index]);
             });    
         }
         return this.cells;
@@ -61,7 +61,7 @@ export class SolveResult {
         result.length = 81;
     
         for (let update of this.updates) {
-            let index = update.index();
+            let index = update.index;
             if (index >= 0 && index < 81) {
                 if (!result[index]) {
                     result[index] = [];

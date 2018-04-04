@@ -1,12 +1,12 @@
-import { GetRow, GetColumn, GetGrid, GetKeyForGrid } from "./RowCol";
+import { GetRow, GetColumn, GetGrid, GetKeyForGrid } from './RowCol';
 
-export interface IBoardIterator {
+export interface BoardIterator {
     length(): number;
     get(): number;
     next(): boolean;
 }
 
-export class RowIterator implements IBoardIterator {
+export class RowIterator implements BoardIterator {
     private current: number;
     private skipValue: number|undefined;
 
@@ -31,7 +31,7 @@ export class RowIterator implements IBoardIterator {
     }
 }
 
-export class ColumnIterator implements IBoardIterator {
+export class ColumnIterator implements BoardIterator {
     private current: number;
     private skipValue: number|undefined;
 
@@ -56,7 +56,7 @@ export class ColumnIterator implements IBoardIterator {
     }
 }
 
-export class GridIterator implements IBoardIterator {
+export class GridIterator implements BoardIterator {
     private start: number;
     private step: number;
     private skipValue: number|undefined;
@@ -83,7 +83,7 @@ export class GridIterator implements IBoardIterator {
     }
 }
 
-export class RowColGridIterator implements IBoardIterator {
+export class RowColGridIterator implements BoardIterator {
     private current: number;
     private row: number;
     private col: number;

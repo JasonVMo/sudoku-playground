@@ -1,5 +1,5 @@
-import { CellData } from "../types";
-import { IBoardIterator, RowIterator, ColumnIterator, GridIterator, RowColGridIterator } from "./BoardIterator";
+import { CellData } from '../types';
+import { BoardIterator, RowIterator, ColumnIterator, GridIterator, RowColGridIterator } from './BoardIterator';
 
 export function GetRow(index: number): number {
     return (Math.floor(index / 9));
@@ -54,7 +54,12 @@ export enum FilterType {
     RowColGrid
 }
 
-export function GetCellSubarray(cells: Array<CellData>, filter: FilterType, keyIndex: number, excludeKey: boolean = true): Array<CellData> {
+export function GetCellSubarray(
+            cells: Array<CellData>, 
+            filter: FilterType, 
+            keyIndex: number, 
+            excludeKey: boolean = true
+        ): Array<CellData> {
     let checkRow: boolean = (filter === FilterType.Row || filter === FilterType.RowColGrid);
     let keyRow: number = GetRow(keyIndex);
 
@@ -76,7 +81,7 @@ export function GetCellSubarray(cells: Array<CellData>, filter: FilterType, keyI
     });
 }
 
-function IterFromFilter(filter: FilterType, key: number, skipKey: boolean): IBoardIterator {
+function IterFromFilter(filter: FilterType, key: number, skipKey: boolean): BoardIterator {
     switch (filter) {
         case FilterType.Row:
             return new RowIterator(key, skipKey);
@@ -85,13 +90,20 @@ function IterFromFilter(filter: FilterType, key: number, skipKey: boolean): IBoa
         case FilterType.Grid:
             return new GridIterator(key, skipKey);
         case FilterType.RowColGrid:
+        default:
             return new RowColGridIterator(key, skipKey);
     }
 }
 
-export function FillCellArray(result: Array<CellData>, cells: Array<CellData>, filter: FilterType, keyIndex: number, excludeKey: boolean) {
+export function FillCellArray(
+            result: Array<CellData>, 
+            cells: Array<CellData>, 
+            filter: FilterType, 
+            keyIndex: number, 
+            excludeKey: boolean
+        ) {
     // make sure the result array is big enough for the result set
-    let iter: IBoardIterator = IterFromFilter(filter, keyIndex, excludeKey);
+    let iter: BoardIterator = IterFromFilter(filter, keyIndex, excludeKey);
     let expectedLength: number = iter.length();
     if (result.length !== expectedLength) {
         result.length = expectedLength;
@@ -126,6 +138,7 @@ export function KeyIndexOfType(offset: number, type: FilterType): number {
             return offset;
         case FilterType.Grid:
             return (Math.floor(offset / 3) * 27) + ((offset % 3) * 3);
+        default:
     }
     return offset;
 }

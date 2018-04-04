@@ -36,6 +36,7 @@ function Footer({ penMode, solveResult }: Props) {
                 <CmdButton cmdGroup="NumPress" cmdText="8" selected={penMode} />
                 <CmdButton cmdGroup="NumPress" cmdText="9" selected={penMode} />
             </div>
+            <CmdButton cmdGroup="FillMarks" cmdText="Fill Pencil Marks" selected={false} />
             <CmdButton cmdGroup="Solver" cmdText="Help Me" selected={false} />
             <Label>{solveResult}</Label>
         </div>
